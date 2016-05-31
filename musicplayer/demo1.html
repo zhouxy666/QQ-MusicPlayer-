@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+	<head>
+		<!--声明当前页面的编码集gbk,gb2312中文编码，utf-8国际编码-->
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>音乐播放器</title>
+		<meta name="keywords"content="关键词,关键词" >
+		<meta name="description" content="" >
+		<!--css,js-->
+		<style type="text/css">
+			*{margin:0px;padding:0px;}
+			body{font:12px/24px "微软雅黑" bold;background:url("images/bg_01.jpg") no-repeat;background-size:cover;background-attachment: fixed;}
+			ul li{list-style: none;}
+			a{text-decoration: none;}
+			.clearfix:after{content:".";display:block;visibility:hidden;height: 0;clear:both;}
+			.wrap{background:#ccc;}
+			.wrap .playbox{width:541px;height:115px;position:fixed;bottom:10px;left:0px;background: #000;box-shadow:3px 3px 6px rgba(0,0,0,0.5);border-radius:0 4px 4px 0;}
+			.playbox .pbox_img{margin:12px 10px;width:90px;height:90px;float:left;}
+			/*音乐info - start*/
+			.playbox .pbox_info{margin:7px;float: left;}
+			.playbox .pbox_info  p{color: #fff;}
+			.playbox .pbox_info .pi_font{float:left;}
+			.playbox .pbox_info .pi_font .pif_tips a{color:#fff;background:url("images/player_bg.png") no-repeat;display: inline-block;width:13px;height: 13px;}
+			.playbox .pbox_info .pi_font .pif_tips .heart{background-position:-2px -128px;}
+			.playbox .pbox_info .pi_font .pif_tips .share{background-position:-18px -128px;}
+			.playbox .pbox_info .pi_font .pif_tips .sing{background-position:-98px -128px;}
+
+			.playbox .pbox_info .pi_radio{float:left;}
+			.playbox .pbox_info .pi_radio a{display:inline-block;background:url("images/player_bg.png") no-repeat -453px -55px;width: 76px; height:26px;}
+			/*音乐info - end*/
+			/*播放控件 - start*/
+			.playbox .pbox_bar{height:100%;float:left;position:relative;}
+			.playbox .pbox_bar ul li{float:left;margin-right:3px;margin-top:40px;}
+			.playbox .pbox_bar ul li a{width:36px;height:28px;background: url("images/player_bg.png") no-repeat;display: block;margin-top:3px;}
+			.playbox .pbox_bar .bar_pre{background-position:-69px 0;}
+			.playbox .pbox_bar .bar_pre:hover{background-position:-69px -32px}
+				/*播放*/
+			.playbox .pbox_bar .bar_play{width: 42px;height:42px;background-position: -105px 0;margin-top:-5px;}
+			.playbox .pbox_bar .bar_play:hover{background-position:-105px -42px}
+				/*暂停*/
+			.playbox .pbox_bar .bar_pause{width: 42px;height:42px;background-position:-291px -88px;margin-top:-5px;}
+			.playbox .pbox_bar .bar_pause:hover{background-position:-333px -88px}			
+
+			.playbox .pbox_bar .bar_next{background-position: -147px 0;}
+			.playbox .pbox_bar .bar_next:hover{background-position: -147px -32px;}
+			.playbox .pbox_bar .bar_model{background-position: -219px 0;}
+			.playbox .pbox_bar .bar_model:hover{background-position: -219px -32px}
+				/*音量*/
+			.playbox .pbox_bar .bar_voice{width:24px;height:24px;background-position: -189px -2px;margin-top:5px;}
+			.playbox .pbox_bar .bar_voice:hover{background-position: -189px -34px;}
+				/*静音*/
+			.playbox .pbox_bar .volume_mute{width:24px;height:24px;background-position: -152px -63px;margin-top:5px;}
+			.playbox .pbox_bar .volume_mute:hover{background-position: -189px -63px;}
+			
+			.playbox .pbox_bar .bar_vline{width:71px;height:11px;background-position: -291px -11px;margin-top:11px;}
+			/*播放控件 - end*/
+			/*歌名列表 - start*/
+			.playbox .pbox_bar .open_list{position:absolute;top:0;right:30px;display: block;width: 47px;height:28px;background: url("images/player_bg.png") no-repeat -222px -97px;cursor: pointer;color:#fff;}
+			.playbox .pbox_bar .open_list span{width:24px;height:30px;text-align: center;margin: 27px;}
+			/*歌名列表 - end*/
+			/*歌词控件 - start*/
+			.playbox .pbox_bar .btn_lrc{position:absolute;top:8px;right:7px;width:14px;height:14px;background:url("images/player_bg.png") no-repeat -452px 0;}
+			/*歌词控件 - end*/
+			/*fold控件 - start*/
+			.playbox .btn_fold{height:100%;width:22px;background:url("images/player_bg.png") no-repeat;right:0;top:0;position:absolute;cursor: pointer;}
+			/*fold控件 - end*/
+			/*bar_process - start*/
+			.bar_process{border:2px solid #2c4838;width:96%;margin-top:-3px;position:relative;border-left:0;border-right:0;}
+			.bar_point{width:6px;height:6px;border-radius:100%;position:absolute;background:#fff;top:-3px;left:0%;z-index: 3}
+			.bar_line{border:2px solid #0cc65b;width:0%;top:-2px;position:absolute;z-index:1;}
+			.bar_shadow{border:2px solid transparent;width:99%;top:-2px;position:absolute;z-index:2;cursor:pointer;}
+			/*bar_process - end*/
+		</style>
+	</head>
+<body>
+<div class="wrap">
+<!-- 播放控件 - start-->
+	<div class="playbox ">
+	<div class="clearfix">
+		<div class="pbox_img">
+			<a href="javascript:void(0)">
+				<img src="images/xzq_yy02.jpg" alt="演员" width="90px" height="90px">
+			</a>
+		</div>
+		<div class="pbox_info">
+			<div class="pi_font">
+				<p class="pif_song"><span>初学者</span></p>
+				<p class="pif_singer"><span>薛之谦</span></p>
+				<p class="pif_time"><span>04:40</span></p>
+				<p class="pif_tips">
+					<a class="heart" href="javascript:void(0)"></a>
+					<a class="share" href="javascript:void(0)"></a>
+					<a class="sing" href="javascript:void(0)"></a>
+				</p>
+			</div>
+			<div class="pi_radio">
+				<a href="javascript:void(0)"></a>
+			</div>
+		</div>
+		<div class="pbox_bar">
+			<ul>
+				<li>
+					<a class="bar_pre" href="javascript:void(0)"></a>
+				</li>
+				<li>
+					<a class="bar_play" href="javascript:void(0)"></a>
+				</li>
+				<li>
+					<a class="bar_next" href="javascript:void(0)"></a>
+				</li>
+				<li>
+					<a class="bar_model" href="javascript:void(0)"></a>
+				</li>
+				<li>
+					<a class="bar_voice" href="javascript:void(0)"></a>
+				</li>
+				<li>
+					<a class="bar_vline" href="javascript:void(0)"></a>
+					<!-- <span class="vline"></span> -->
+				</li>
+			</ul>
+			<span class="open_list">
+				<span>18</span>
+			</span>
+			<span class="btn_lrc"></span>
+		</div>
+		<div class="btn_fold">
+		</div>
+		</div>
+		
+		<div class="bar_process">
+			<div class="bar_point"></div>
+			<div class="bar_shadow"></div>
+			<div class="bar_line"></div>
+		</div>
+	</div>
+<!-- 播放控件 - end-->
+<!-- 播放控件02 - start-->
+<audio id="audio" src="mp3/yanyuan.mp3" controls=controls loop=loop></audio>
+<div>总时长：<span  class="t_time"></span></div>
+<div>当前时间1：<span class="c_time">1</span></div>
+<div>当前时间2：<span class="c_seconds">2</span></div>
+<!-- 播放控件02 - end-->
+</div>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">
+	var oBtnPlay = $(".bar_play");
+	var oBtnFold = $(".btn_fold");
+	var oPlayBox = $(".playbox");
+	var oBtnVol = $(".bar_voice");
+	var tTime = $(".t_time");
+	var cTime = $(".c_time");
+	var cSeconds = $(".c_seconds");
+	var oBarPoint = $(".bar_point");
+	var oBarLine = $(".bar_line");
+	var oBarShadow = $(".bar_shadow");
+	var oAudio = document.getElementById("audio");
+	//获取playbox当前的left
+	var oPlayBoxLeft = oPlayBox.position().left; 
+	var oPlayBoxWidth = oPlayBox.width();
+	var oBtnFoldWidth = oBtnFold.width(); 
+	var oDuration;//当前音频的总时长
+	var oCurTime;//**:**时间格式
+	var oCurSeconds;//已经播放的时间秒数
+	var oPercent; 
+	//设置oBtnFold锁
+	var oFoldFlag = true;
+	var oPlayFlag = true;
+	var oVolFlag = true;
+	window.onload=function(){
+		//给btnfold绑定一个click事件
+		oBtnFold.on("click",function(){
+			btnfold(oFoldFlag);
+		});
+		oBtnPlay.on("click",function(){
+			oplay(oPlayFlag,$(this));
+		});
+		oBtnVol.on("click",function(){
+			omute(oVolFlag);
+		});
+		oAudio.ontimeupdate = function(){
+			getcurrenttime();
+		}
+		oBarShadow.on("click",function(){
+			setPercent();
+		});
+
+		audioinit();
+	}
+	function btnfold(obj){
+		var w = oPlayBoxWidth - oBtnFoldWidth;
+		if(obj){
+			oPlayBox.animate({"left":"-"+w+"px"},500,function(){
+				oBtnFold.css("background-position","-46px 0");
+			});
+			oFoldFlag = false;
+		}else{
+			oPlayBox.animate({"left":0+"px"},500,function(){
+				oBtnFold.css("background-position","0 0");
+			});
+			oFoldFlag = true;
+		}
+	}
+	function oplay(flag,obj){
+		if(flag){
+			$(obj).attr("class","bar_pause");
+			oAudio.play();
+			oPlayFlag = false;
+			tTime.html(oDuration);
+			
+		}else{
+			$(obj).attr("class","bar_play");
+			oAudio.pause();	
+			oPlayFlag = true;		
+		}
+	}
+	function omute(){
+		if(oVolFlag){
+			oBtnVol.attr("class","volume_mute");
+			oAudio.muted = true;
+			oVolFlag = false;
+		}else{
+			oBtnVol.attr("class","bar_voice");
+			oAudio.muted = false;
+			oVolFlag = true;
+		}
+	}
+	function audioinit(){
+		oDuration = parseInt(oAudio.duration);
+	}
+	function getcurrenttime(){
+		 var min = parseInt((oAudio.currentTime)/60);
+		 min<10?min="0"+min:min = min;
+		 var sec = parseInt((oAudio.currentTime)%60);
+		 sec<10?sec="0"+sec:sec = sec;
+		 var oCurTime = min+":"+sec;
+		 var oCurSeconds = parseInt(oAudio.currentTime);
+		cTime.html(oCurTime);
+		cSeconds.html(oCurSeconds);
+		oPercent = parseInt((oCurSeconds/oDuration)*100);
+		oPercent==100?oPercent=99+"%":oPercent=oPercent+"%";
+		console.log(oPercent);
+		processlien(oPercent);
+	}
+	function processlien(per){
+		oBarPoint.css("left",per)
+		oBarLine.css("width",per);
+	}
+	function setPercent(){
+		
+	}
+ </script>
+ </body>
+</html>
+
+
+
