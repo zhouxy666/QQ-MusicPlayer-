@@ -75,7 +75,7 @@
 <body>
 <div class="wrap">
 <!-- 播放控件 - start-->
-	<div class="playbox ">
+	<div class="playbox " onselectstart="return false">
 	<div class="clearfix">
 		<div class="pbox_img">
 			<a href="javascript:void(0)">
@@ -167,6 +167,7 @@
 	var oFoldFlag = true;
 	var oPlayFlag = true;
 	var oVolFlag = true;
+	var bPointFlag = false;
 	window.onload=function(){
 		//给btnfold绑定一个click事件
 		oBtnFold.on("click",function(){
@@ -181,8 +182,24 @@
 		oAudio.ontimeupdate = function(){
 			getcurrenttime();
 		}
-		oBarShadow.on("click",function(){
-			setPercent();
+		oBarShadow.on({
+			"click":function(){
+				setPercent();
+			},
+			"mousemove":function(){
+				getPosx();
+			}
+		});
+		oBarPoint.on({
+			"mousedown":function(){
+				bpointDown();
+			},
+			"mousemove":function(){
+				bpointMove();
+			},
+			"mouseup":function(e){
+				e.onmouseup
+			}
 		});
 
 		audioinit();
@@ -247,7 +264,30 @@
 		oBarLine.css("width",per);
 	}
 	function setPercent(){
-		
+		var barShaWidth = oBarShadow.width();
+		var ex = getPosx();
+		//alert(ex+"==="+oDuration+"==="+barShaWidth);
+		var percentx = parseInt((ex/barShaWidth)*100)+"%";
+		var numx = parseInt((ex/barShaWidth)*oDuration);
+		console.log(numx);
+		processlien(percentx);
+		oAudio.currentTime = numx;
+	}
+	function getPosx(e){
+		var ev = e || window.event;
+		var x = ev.clientX||ev.pagex;
+		return x;
+	}
+	function bpointDown(){
+		bPointFlag = true;
+	}
+	function bpointMove(){
+		if(bPointFlag){
+			setPercent();
+		}
+	}
+	function bpointUp(){
+		bPointFlag = true;
 	}
  </script>
  </body>
